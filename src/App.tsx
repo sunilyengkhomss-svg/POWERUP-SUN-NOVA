@@ -31,6 +31,7 @@ import { SupportView } from './components/SupportView';
 import { CustomerPortalView } from './components/CustomerPortalView';
 import { AdminDashboardView } from './components/AdminDashboardView';
 import { Footer } from './components/Footer';
+import { AiSupportChat } from './components/AiSupportChat';
 
 const BAG_STORAGE_KEY = 'powerup_sun_nova_bag_v1';
 const CUSTOMER_TOKEN_KEY = 'powerup_sun_nova_cust_token';
@@ -61,6 +62,7 @@ export default function App() {
   const [sortMode, setSortMode] = useState<SortMode>('popular');
 
   const [cartOpen, setCartOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const [preferredPayment, setPreferredPayment] = useState<PaymentChannelId>('upi');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [trackOrderId, setTrackOrderId] = useState('');
@@ -363,7 +365,10 @@ export default function App() {
             }}
           />
         ) : activeRoute === 'support' ? (
-          <SupportView supportEmail={settings.supportEmail} />
+          <SupportView
+            supportEmail={settings.supportEmail}
+            onOpenAiChat={() => setAiChatOpen(true)}
+          />
         ) : (
           <>
             {activeRoute === 'catalog' && (
@@ -410,6 +415,7 @@ export default function App() {
         supportEmail={settings.supportEmail}
         onNavigate={handleNavigate}
         onSelectGame={handleSelectGame}
+        onOpenAiChat={() => setAiChatOpen(true)}
       />
 
       <CartDrawer
@@ -429,10 +435,17 @@ export default function App() {
         onViewOrderTracker={handleViewOrderTracker}
       />
 
+      <AiSupportChat
+        open={aiChatOpen}
+        onOpenChange={setAiChatOpen}
+        supportEmail={settings.supportEmail}
+        onOpenSupportPage={() => handleNavigate('support')}
+      />
+
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-xl bg-[#131729] border border-violet-500/40 text-white text-xs font-medium shadow-xl flex items-center gap-3"
+          className="fixed bottom-20 right-5 z-40 px-4 py-3 rounded-xl bg-[#131729] border border-violet-500/40 text-white text-xs font-medium shadow-xl flex items-center gap-3"
         >
           <span>{toastMessage}</span>
           <button

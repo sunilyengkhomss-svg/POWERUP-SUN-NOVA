@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Bot, Check, Copy } from 'lucide-react';
 import type { ActiveRoute } from './Navbar';
 
 interface FooterProps {
@@ -5,6 +7,7 @@ interface FooterProps {
   supportEmail: string;
   onNavigate: (route: ActiveRoute) => void;
   onSelectGame: (slug: string) => void;
+  onOpenAiChat: () => void;
 }
 
 export function Footer({
@@ -12,7 +15,20 @@ export function Footer({
   supportEmail,
   onNavigate,
   onSelectGame,
+  onOpenAiChat,
 }: FooterProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(supportEmail);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore clipboard errors
+    }
+  };
+
   return (
     <footer className="bg-[#05060B] text-slate-300 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -133,9 +149,39 @@ export function Footer({
               Apply <span className="font-mono text-white">NOVA5</span> for 5% instant savings or{' '}
               <span className="font-mono text-white">UPI20</span> on orders ₹500+.
             </p>
-            <p className="text-xs text-slate-400 mt-3">
-              Helpdesk: <span className="text-slate-200">{supportEmail}</span>
-            </p>
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-slate-400">Helpdesk (No Direct Redirect):</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono text-slate-200 select-all">
+                  {supportEmail}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-sky-400 cursor-pointer"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-400" aria-hidden="true" />
+                      <span className="text-emerald-400">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" aria-hidden="true" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenAiChat}
+                className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/20 hover:bg-violet-600/35 border border-violet-500/35 text-xs font-semibold text-violet-200 transition-colors cursor-pointer"
+              >
+                <Bot className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
+                <span>24/7 AI Support Chat</span>
+              </button>
+            </div>
           </div>
         </div>
 

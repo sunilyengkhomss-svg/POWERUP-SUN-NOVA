@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, ChevronDown, Loader2 } from 'lucide-react';
+import { Bot, Check, CheckCircle2, ChevronDown, Copy, Loader2 } from 'lucide-react';
 
 const FAQS = [
   {
@@ -20,7 +20,13 @@ const FAQS = [
   },
 ];
 
-export function SupportView({ supportEmail }: { supportEmail: string }) {
+export function SupportView({
+  supportEmail,
+  onOpenAiChat,
+}: {
+  supportEmail: string;
+  onOpenAiChat: () => void;
+}) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [orderId, setOrderId] = useState('');
   const [email, setEmail] = useState('');
@@ -29,6 +35,17 @@ export function SupportView({ supportEmail }: { supportEmail: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [ticketId, setTicketId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(supportEmail);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch {
+      // ignore clipboard denial
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,9 +82,47 @@ export function SupportView({ supportEmail }: { supportEmail: string }) {
             <h1 className="font-display text-3xl font-bold tracking-tight text-white">
               POWERUP SUN NOVA Support
             </h1>
-            <p className="text-sm text-slate-400 mt-1.5">
-              Helpdesk email: <span className="text-sky-400">{supportEmail}</span>
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+              <span>Helpdesk email (no redirect):</span>
+              <span className="font-mono text-sky-400 select-all">{supportEmail}</span>
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-200 cursor-pointer"
+              >
+                {copiedEmail ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
+                    <span className="text-emerald-400">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-xl p-5 border border-violet-500/30 bg-gradient-to-r from-violet-950/40 to-blue-950/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="font-display text-base font-bold text-white flex items-center gap-2">
+                <Bot className="w-4 h-4 text-violet-400" aria-hidden="true" />
+                <span>24/7 AI Instant Support Chat</span>
+              </p>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Ask any question about game packs, BGMI vs PUBG Global, UPI payments, coupons, or
+                track an order ID immediately.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onOpenAiChat}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white text-xs font-semibold shrink-0 cursor-pointer min-h-[40px]"
+            >
+              Start 24/7 AI Chat
+            </button>
           </div>
 
           <div className="glass-card rounded-xl divide-y divide-white/10">

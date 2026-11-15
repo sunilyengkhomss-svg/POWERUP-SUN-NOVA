@@ -38,7 +38,7 @@ export const INITIAL_WEBSITE_SETTINGS: WebsiteSettings = {
   referralBonusInr: 50,
   turnstileEnabled: true,
   turnstileSiteKey: '1x00000000000000000000AA',
-  supportEmail: 'support@powerupsunnova.com',
+  supportEmail: 'support.powerupsunnova@gmail.com',
 };
 
 export const INITIAL_SUPPLIERS: SupplierConfig[] = [

@@ -6,6 +6,10 @@ import {
   INITIAL_SUPPLIERS,
   INITIAL_WEBSITE_SETTINGS,
 } from './data/catalog.ts';
+import {
+  generateSunNovaAiReply,
+  type AiChatHistoryTurn,
+} from './server/aiSupport.ts';
 import type {
   BannerRecord,
   CouponRecord,
@@ -36,6 +40,7 @@ interface WorkerEnv {
   RAZORPAY_WEBHOOK_SECRET?: string;
   TURNSTILE_SITE_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
+  GEMINI_API_KEY?: string;
 }
 
 interface CustomerInternal extends CustomerProfile {
@@ -886,6 +891,29 @@ export default {
       };
       supportTicketsStore.unshift(ticket);
       return jsonResponse({ ticket }, 201);
+    }
+
+    if (pathname === '/api/ai-chat' && method === 'POST') {
+      const { message, history } = await readJson<{
+        message?: string;
+        history?: AiChatHistoryTurn[];
+      }>(request);
+
+      const result = await generateSunNovaAiReply({
+        apiKey: env.GEMINI_API_KEY,
+        message: message || '',
+        history,
+        catalog: catalogStore,
+        coupons: couponsStore,
+        paymentChannels: paymentChannelsStore,
+        orders: ordersStore,
+        settings: websiteSettings,
+      });
+
+      if (result.error) {
+        return jsonResponse({ error: result.error }, result.statusCode);
+      }
+      return jsonResponse({ reply: result.reply });
     }
 
     if (pathname === '/api/admin/login' && method === 'POST') {

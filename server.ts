@@ -11,6 +11,10 @@ import {
   INITIAL_SUPPLIERS,
   INITIAL_WEBSITE_SETTINGS,
 } from './src/data/catalog.ts';
+import {
+  generateSunNovaAiReply,
+  type AiChatHistoryTurn,
+} from './src/server/aiSupport.ts';
 import type {
   BannerRecord,
   CouponRecord,
@@ -1169,6 +1173,32 @@ async function startServer() {
 
     supportTicketsStore.unshift(ticket);
     res.status(201).json({ ticket });
+  });
+
+  // 24/7 AI Customer Support Chat (Server-Side Gemini API)
+  app.post('/api/ai-chat', async (req, res) => {
+    const { message, history } = req.body as {
+      message?: string;
+      history?: AiChatHistoryTurn[];
+    };
+
+    const result = await generateSunNovaAiReply({
+      apiKey: process.env.GEMINI_API_KEY,
+      message: message || '',
+      history,
+      catalog: catalogStore,
+      coupons: couponsStore,
+      paymentChannels: paymentChannelsStore,
+      orders: ordersStore,
+      settings: websiteSettings,
+    });
+
+    if (result.error) {
+      res.status(result.statusCode).json({ error: result.error });
+      return;
+    }
+
+    res.json({ reply: result.reply });
   });
 
   // Admin Authentication & Operations APIs
