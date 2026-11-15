@@ -1,0 +1,34 @@
+# Cloudflare Workers + Static Assets Configuration for POWERUP SUN NOVA
+# Matches Cloudflare Git integration command: `npx wrangler deploy`
+name = "powerup-sun-nova"
+main = "src/worker.ts"
+compatibility_date = "2025-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Automatically builds the Vite frontend even when Cloudflare dashboard Build command is "None"
+[build]
+command = "npm run build"
+
+[assets]
+directory = "dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[vars]
+BRAND_NAME = "POWERUP SUN NOVA"
+PAYMENT_MODE = "sandbox"
+
+# Uncomment and replace with your provisioned Cloudflare resource IDs when ready:
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "powerup_sun_nova_db"
+# database_id = "<YOUR_D1_DATABASE_ID>"
+#
+# [[kv_namespaces]]
+# binding = "KV_STORE"
+# id = "<YOUR_KV_NAMESPACE_ID>"
+#
+# [[r2_buckets]]
+# binding = "ASSETS_R2"
+# bucket_name = "powerup-sun-nova-assets"

@@ -1,0 +1,6 @@
+{
+  "name": "POWERUP SUN NOVA",
+  "description": "Power Up. Play More. Win Bigger. Instant gaming recharge, UC, Diamonds, and digital gift cards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
